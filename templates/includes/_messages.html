@@ -1,7 +1,19 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
+<!-- Rendering flash template -->
     {% if messages %}
+    <!-- if there is any message -->
         {%for category, message in messages %}
+        <!-- flash messaegs -->
         <div class="alter alert-{{ category }}">{{ message }}</div>
         {% endfor %}
     {% endif %}
 {% endwith %}
+
+<!-- Sorry -->
+{% if error %}
+    <div class="alert alert-danger">{{error}}</div>
+{% endif %}     
+
+{% if msg %}
+<div class="alert alert-success">{{msg}}</div>
+{% endif %}
