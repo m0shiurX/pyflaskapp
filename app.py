@@ -37,6 +37,7 @@ def articles():
 def article(id):
     return render_template('article.html', id=id)
 
+# Register Form
 class RegistrationForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
     username = StringField('Username', [validators.Length(min=4, max=50)])
@@ -102,6 +103,16 @@ def login():
 
     return render_template('login.html')
 
+
+# Logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("You are Logged out !")
+    return redirect(url_for('login'))
+
+
+# Dashboard
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
