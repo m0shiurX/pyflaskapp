@@ -109,7 +109,7 @@ def login():
                 session['username'] = username
                 flash("You are logged in !", 'success')
                 return redirect(url_for('dashboard'))
-                
+
             else:
                 error = "Password not found !"
                 return render_template('login.html', error=error)
@@ -124,6 +124,7 @@ def login():
 
 # Logout
 @app.route('/logout')
+@is_logged_in
 def logout():
     session.clear()
     flash("You are Logged out !")
@@ -135,6 +136,38 @@ def logout():
 @is_logged_in
 def dashboard():
     return render_template('dashboard.html')
+
+
+# Article form class
+class ArticleForm(Form):
+    title = StringField('Title', [validators.Length(min=1, max = 200)])
+    body = TextAreaField('Body', [validators.Length(min=30)])
+
+# Add Article
+@app.route('/add_article', methods = ['GET', 'POST'])
+@is_logged_in
+def add_article():
+    form = ArticleForm(request.form)
+    if request.method == 'POST' and form.validate():
+        title = form.title.data
+        body = form.body.data
+
+        # Create cursor
+        cur = mysql.connection.cursor()
+
+        # Execute
+        cur.execute("INSERT INTO articles(title, body, author) VALUES (%s, %s, %s)", (title, body, session['username']))
+
+        mysql.connection.commit()
+        cur.close()
+
+        # Flash messsage
+        flash("Your article has been published !", 'success')
+        return redirect(url_for('articles'))
+    return render_template('add_article.html', form=form)
+
+
+
 
 if __name__ == '__main__':
     app.secret_key ='secret123'
