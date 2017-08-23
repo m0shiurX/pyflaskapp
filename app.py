@@ -16,7 +16,6 @@ app.config['MYSQL_DB'] = 'myflaskapp'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 #init MySQL
-
 mysql = MySQL(app)
 
 
@@ -61,7 +60,17 @@ def articles():
 
 @app.route('/articles/<string:id>/')
 def article(id):
-    return render_template('article.html', id=id)
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Execute
+    result = cur.execute("SELECT * FROM articles WHERE id = %s", [id])
+    article = cur.fetchone()
+    if result > 0:
+        return render_template('article.html', article = article)
+    else:
+        msg = 'Not found !'
+        return render_template('article.html', mas = msg)
+
 
 # Register Form
 class RegistrationForm(Form):
