@@ -41,17 +41,25 @@ def is_logged_in(f):
 
 
 @app.route('/about')
-@is_logged_in
 def about():
     return render_template('about.html')
 
 @app.route('/articles')
-@is_logged_in
 def articles():
-    return render_template('articles.html', articles = Articles)
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Execute
+    result = cur.execute("SELECT * FROM articles")
+    articles = cur.fetchall()
+
+    if result > 0:
+        return render_template('articles.html', articles = articles)
+    else:
+        msg = 'No articles found !'
+        return render_template('articles.html', mas = msg)
+
 
 @app.route('/articles/<string:id>/')
-@is_logged_in
 def article(id):
     return render_template('article.html', id=id)
 
@@ -135,7 +143,17 @@ def logout():
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    return render_template('dashboard.html')
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Execute
+    result = cur.execute("SELECT * FROM articles")
+    articles = cur.fetchall()
+
+    if result > 0:
+        return render_template('dashboard.html', articles = articles)
+    else:
+        msg = 'No articles found !'
+        return render_template('dashboard.html', mas = msg)
 
 
 # Article form class
